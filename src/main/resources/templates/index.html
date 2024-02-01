@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Customer List</title>
+
+    <link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+	crossorigin="anonymous">
+	 <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}" />
+     <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
+
+    <style>
+		
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(0, 0, 0);
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        h1 {
+			text-align: center;
+            color: rgb(255, 255, 255);
+        }
+   
+        .btn-add-customer {
+            margin-bottom: 20px;
+        }
+
+       table {
+		    width: 100%;
+		    border-collapse: collapse;
+		    border: 1px solid #dee2e6;
+		    margin-top: 20px;
+		    background-color: rgb(0, 0, 0);
+		    color: rgb(255, 255, 255);
+		    margin-bottom: 20px; /* Add some margin at the bottom */
+		}
+
+
+        th, td {
+		    padding: 15px;
+		    text-align: left;
+		    border-bottom: 1px solid #dee2e6; /* Add border to create column lines */
+		    border-right: 1px solid #dee2e6; /* Add border to create column lines */
+		}
+
+		th {
+		    background-color: rgb(0, 0, 0);
+		    color: #fff;
+		    border-right: 1px solid #dee2e6; /* Add border to create column lines */
+		}
+
+
+        tr:hover {
+            background-color: rgb(0, 0, 0);
+        }
+
+        .btn-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-update, .btn-delete {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-update {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+            border: rgb(0, 0, 0);
+        }
+        
+         .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pagination a, .pagination span {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 0 4px;
+        border: 1px solid #ddd;
+        text-decoration: none;
+        color: #333;
+        border-radius: 4px;
+    }
+
+    .pagination a:hover {
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+    }
+
+    .pagination .active {
+        background-color: rgb(255, 255, 255);
+        color: #fff;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer List</h1>
+        <hr>
+        <a th:href="@{/showNewEmployeeForm}" class="btn btn-primary btn-sm btn-add-customer">Add Customer</a>
+    <div>
+		<form th:action="@{/page/1}" class="form-inline">
+			<input type="hidden" name="sortField" th:value="${sortField}"/>
+			<input type="hidden" name="sortDir" th:value="${sortDir}"/>
+
+			Filter:&nbsp;
+			<input type="search" name="keyword" th:value="${keyword}" class="form-control" required/>
+			&nbsp;&nbsp;
+			<input type="submit" value="Search" class="btn-primary" />
+			&nbsp;&nbsp;
+			<input type="button" value="Clear" class="btn btn-secondary" onclick="clearFilter()"/>
+		</form>
+	</div>
+	
+	<div>
+    <table class="table table-bordered table-striped table-hover table-responsive-xl">
+        <thead>
+            <tr>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=firstName&sortDir=' + ${reverseSortDir}}">First Name</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=lastName&sortDir=' + ${reverseSortDir}}">Last Name</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=address&sortDir=' + ${reverseSortDir}}">Address</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=street&sortDir=' + ${reverseSortDir}}">Street</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=city&sortDir=' + ${reverseSortDir}}">City</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=state&sortDir=' + ${reverseSortDir}}">State</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">Email</a>
+                </th>
+                <th>
+                    <a th:href="@{'/page/' + ${currentPage} + '?sortField=phone&sortDir=' + ${reverseSortDir}}">Phone No.</a>
+                </th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="employee:${listEmployees}">
+                <td th:text="${employee.firstName}"></td>
+                <td th:text="${employee.lastName}"></td>
+                <td th:text="${employee.address}"></td>
+                <td th:text="${employee.street}"></td>
+                <td th:text="${employee.city}"></td>
+                <td th:text="${employee.state}"></td>
+                <td th:text="${employee.email}"></td>
+                <td th:text="${employee.phone}"></td>
+                <td class="btn-actions">
+                    <a th:href="@{/showFormForUpdate/{id}(id=${employee.id})}" class="btn btn-success btn-update">Update</a>
+                    <a th:href="@{/deleteEmployee/{id}(id=${employee.id})}" class="btn btn-danger btn-delete">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${totalPages > 1}">
+         <div class="pagination justify-content-center">
+             <div class="pagination justify-content-center">
+                Total Rows: [[${totalItems}]]
+             </div>
+             <div class="pagination justify-content-center">
+                <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${currentPage != i}" th:href="@{'/page/' + ${i}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${i}]]</a>
+                    <span th:unless="${currentPage != i}">[[${i}]]</span> &nbsp; &nbsp;
+                </span>
+             </div>
+             <div class="pagination justify-content-center">
+                <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${currentPage + 1}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">Next</a>
+                <span th:unless="${currentPage < totalPages}">Next</span>
+             </div>
+             <div class="pagination justify-content-center">
+                <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${totalPages}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">Last</a>
+                <span th:unless="${currentPage < totalPages}">Last</span>
+             </div>
+          </div>
+      </div>
+   </div>      
+</div>
+
+<script type="text/javascript">
+	function clearFilter(){
+		window.location = "[[@{/}]]";
+	}
+</script>
+</body>
+</html>
